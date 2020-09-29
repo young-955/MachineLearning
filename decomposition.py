@@ -3,6 +3,9 @@
 from sklearn.decomposition import SparseCoder
 import numpy as np
 from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+import pandas as pd
 
 # 稀疏编码测试
 def test_sparse_coder_estimator(X):
@@ -16,39 +19,45 @@ def test_sparse_coder_estimator(X):
     assert(not np.all(code == 0))
     assert(np.sqrt(np.sum((np.dot(code, V) - X) ** 2)) <= 0.1)
 
-
 # %%
-#coding=utf-8
+data = load_iris()
+# type(data)
+# data.keys()
+# data['feature_names']
+x = pd.DataFrame(data['data'])
+y = data['target']
 
-__author__ = 'Administrator'
+pca = PCA(n_components=2)
+x_dr = pca.fit_transform(x)
 
-import pythoncom
-from win32com.shell import shell, shellcon
+# 可解释性方差/占比，大概就是重要性
+pca.explained_variance_
+pca.explained_variance_ratio_
 
-g_desk = None
+# colors = ['red', 'blue', 'green']
+# data['target_names']
 
-def toGBK(s):
-    return s.decode('utf-8').encode('gb2312')
+# plt.figure()
 
-def getDeskComObject():
-    global g_desk
-    if not g_desk:
-        g_desk = pythoncom.CoCreateInstance(shell.CLSID_ActiveDesktop, \
-                                             None, pythoncom.CLSCTX_INPROC_SERVER, \
-                                             shell.IID_IActiveDesktop)
-    return g_desk
+# for i in range(3):
+#     plt.scatter(x_dr[y == i, 0], \
+#     x_dr[y == i, 1], \
+#     alpha=0.7, \
+#     c=colors[i], \
+#     label=data['target_names'])
 
-def setWallPaper(paper):
-    desktop = getDeskComObject()
-    if desktop:
-        desktop.SetWallpaper(paper, 0)
-        desktop.ApplyChanges(shellcon.AD_APPLY_ALL)
+# plt.legend()
+# plt.show()
 
-def addUrlLink(lnk):
-    desktop = getDeskComObject()
-    desktop.AddUrl(0, lnk, 0, 0)
+# 展示随n增加，重要性的增加趋势
+pca_line = PCA().fit(x)
+plt.plot([1,2,3,4],np.cumsum(pca_line.explained_variance_ratio_))
+plt.xticks([1,2,3,4]) #这是为了限制坐标轴显示为整数
+plt.xlabel("number of components after dimension reduction")
+plt.ylabel("cumulative explained variance")
 
-if __name__ == '__main__':
-    paper = r'G:\meinv\长腿美女刘奕宁Lynn唯美私房照\16.jpg'
-    setWallPaper(paper)
-# %%
+# 按最大似然估计规则选择n
+PCA(n_components='mle')
+# 按信息比选择n
+PCA(n_components=0.95)
+
