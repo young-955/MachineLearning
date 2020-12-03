@@ -1,3 +1,4 @@
+# 项目url：https://data-flair.training/blogs/create-emoji-with-deep-learning/
 # %%
 import numpy as np
 import cv2
@@ -8,8 +9,8 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import MaxPooling2D
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-train_dir = 'data/train'
-val_dir = 'data/test'
+train_dir = r'D:\wuziyang\wuziyang\projects\pypros\data\emotion_gen\train'
+val_dir = r'D:\wuziyang\wuziyang\projects\pypros\data\emotion_gen\test'
 train_datagen = ImageDataGenerator(rescale=1./255)
 val_datagen = ImageDataGenerator(rescale=1./255)
 
@@ -17,13 +18,13 @@ train_generator = train_datagen.flow_from_directory(
         train_dir,
         target_size=(48,48),
         batch_size=64,
-        color_mode="gray_framescale",
+        color_mode="grayscale",
         class_mode='categorical')
 validation_generator = val_datagen.flow_from_directory(
         val_dir,
         target_size=(48,48),
         batch_size=64,
-        color_mode="gray_framescale",
+        color_mode="grayscale",
         class_mode='categorical')
 
 emotion_model = Sequential()
@@ -72,6 +73,11 @@ while True:
         cv2.putText(frame, emotion_dict[maxindex], (x+20, y-60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
     cv2.imshow('Video', cv2.resize(frame,(1200,860),interpolation = cv2.INTER_CUBIC))
     if cv2.waitKey(1) & 0xFF == ord('q'):
-cap.release()
-cv2.destroyAllWindows()
-    break
+        cap.release()
+        cv2.destroyAllWindows()
+        break
+# %%
+import tensorflow as tf
+tf.keras.optimizers
+tf.keras.losses
+tf.keras.metrics
