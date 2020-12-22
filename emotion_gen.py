@@ -9,8 +9,8 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import MaxPooling2D
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-train_dir = r'D:\wuziyang\wuziyang\projects\pypros\data\emotion_gen\train'
-val_dir = r'D:\wuziyang\wuziyang\projects\pypros\data\emotion_gen\test'
+train_dir = r'D:\wuziyang\wuziyang\projects\data\emotion_gen\train'
+val_dir = r'D:\wuziyang\wuziyang\projects\data\emotion_gen\test'
 train_datagen = ImageDataGenerator(rescale=1./255)
 val_datagen = ImageDataGenerator(rescale=1./255)
 
@@ -52,6 +52,7 @@ emotion_model_info = emotion_model.fit_generator(
 
 emotion_model.save_weights('model.h5')
 
+model = Sequential().load_weights('model.h5')
 # Using openCV haarcascade xml detect the bounding 
 # boxes of face in the webcam and predict the emotions:
 cv2.ocl.setUseOpenCL(False)
@@ -68,7 +69,7 @@ while True:
         cv2.rectangle(frame, (x, y-50), (x+w, y+h+10), (255, 0, 0), 2)
         roi_gray_frame = gray_frame[y:y + h, x:x + w]
         cropped_img = np.expand_dims(np.expand_dims(cv2.resize(roi_gray_frame, (48, 48)), -1), 0)
-        emotion_prediction = emotion_model.predict(cropped_img)
+        emotion_prediction = model.predict(cropped_img)
         maxindex = int(np.argmax(emotion_prediction))
         cv2.putText(frame, emotion_dict[maxindex], (x+20, y-60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
     cv2.imshow('Video', cv2.resize(frame,(1200,860),interpolation = cv2.INTER_CUBIC))
